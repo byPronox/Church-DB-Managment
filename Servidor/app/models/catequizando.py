@@ -32,3 +32,25 @@ class Catequizando:
         finally:
             cursor.close()
             conn.close()
+            
+            
+            
+    def inscribir(self, id_nivel, fecha, estado, certificado_emitido):
+        conn = get_connection()
+        cursor = conn.cursor()
+        try:
+            cursor.execute("""
+                EXEC sp_InscribirCatequizando
+                    @IdCatequizando = ?,
+                    @IdNivel = ?,
+                    @Fecha = ?,
+                    @Estado = ?,
+                    @CertificadoEmitido = ?
+            """, (self.id_persona, id_nivel, fecha, estado, certificado_emitido))
+            conn.commit()
+            return True, None
+        except Exception as e:
+            return False, str(e)
+        finally:
+            cursor.close()
+            conn.close()

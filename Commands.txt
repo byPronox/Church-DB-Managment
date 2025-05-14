@@ -1,0 +1,12 @@
+Backend (Flask):
+
+cd servidor
+
+python run.py
+
+
+Frontend (React):
+
+cd cliente
+
+npm start
