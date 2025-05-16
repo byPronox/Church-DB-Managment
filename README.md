@@ -2,6 +2,10 @@
 
 Welcome to the **Church Database Management System**, a web application designed to help manage catechizing records for a church. This project combines a modern frontend built with React and a robust backend powered by Flask, with SQL Server as the database.
 
+<p align="center">
+  <img src="./cliente/src/assets/images/PHOTO_MAIN.png" width="400"/>
+</p>
+
 ---
 
 ## Features
