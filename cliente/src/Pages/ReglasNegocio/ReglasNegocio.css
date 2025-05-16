@@ -1,0 +1,55 @@
+.reglas-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #F9F9F9;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease-in-out;
+}
+
+.reglas-container:hover {
+    transform: scale(1.02);
+}
+
+.reglas-title {
+    font-size: 2.5rem;
+    color: #1D1D1F;
+    margin-bottom: 20px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.reglas-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+}
+
+.reglas-item {
+    font-size: 1.2rem;
+    color: #333333;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: color 0.3s ease-in-out;
+}
+
+.reglas-item:hover {
+    color: #0056B3;
+}
+
+.reglas-icon {
+    font-size: 1.5rem;
+    color: #0056B3;
+    flex-shrink: 0;
+    transition: transform 0.3s ease-in-out;
+}
+
+.reglas-item:hover .reglas-icon {
+    transform: scale(1.2);
+}

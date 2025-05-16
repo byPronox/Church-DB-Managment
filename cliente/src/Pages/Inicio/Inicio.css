@@ -1,0 +1,46 @@
+.inicio-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #F9F9F9;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease-in-out;
+}
+
+.inicio-container:hover {
+    transform: scale(1.02);
+}
+
+.inicio-title {
+    font-size: 2.5rem;
+    color: #1D1D1F;
+    margin-bottom: 20px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.inicio-description {
+    font-size: 1.2rem;
+    color: #333333;
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+.inicio-image-container {
+    margin-top: 20px;
+}
+
+.inicio-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+}
+
+.inicio-image:hover {
+    transform: scale(1.05);
+}
