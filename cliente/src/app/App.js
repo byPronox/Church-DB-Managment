@@ -1,10 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from '../Components/NavBar/Navbar';
-import Inicio from '../Pages/Inicio';
-import ReglasNegocio from '../Pages/ReglasNegocio';
-import Procedimientos from '../Pages/Procedimientos';
-import RegistrarCatequizando from '../Pages/Procedimientos/RegistrarCatequizando';
+import Inicio from '../Pages/Inicio/Inicio';
+import ReglasNegocio from '../Pages/ReglasNegocio/ReglasNegocio';
+import Procedimientos from '../Pages/ProcedimientosPage/Procedimientos';
+import RegistrarCatequizando from '../Pages/Procedimientos/RegistrarCatequizando/RegistrarCatequizando';
 import InscribirCatequizando from '../Pages/Procedimientos/InscribirCatequizando';
 
 function App() {
