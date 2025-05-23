@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./cliente
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    stdin_open: true
+    tty: true
+
+  backend:
+    build:
+      context: ./servidor
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=development
+      - SQL_SERVER_HOST=sqlserver
+      - SQL_SERVER_USER=pythonconect
+      - SQL_SERVER_PASSWORD=UDLA
+      - SQL_SERVER_DB=Iglesia
+    depends_on:
+      - sqlserver
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sqlserver
+    ports:
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: "UDLA"
+      ACCEPT_EULA: "Y"

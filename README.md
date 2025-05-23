@@ -1,3 +1,4 @@
+
 # Church Database Management System
 
 Welcome to the **Church Database Management System**, a web application designed to help manage catechizing records for a church. This project combines a modern frontend built with React and a robust backend powered by Flask, with SQL Server as the database.
@@ -15,6 +16,7 @@ Welcome to the **Church Database Management System**, a web application designed
 - **Powerful Backend**: Flask-based RESTful API for efficient data handling.
 - **Database Integration**: SQL Server for secure and reliable data storage.
 - **Cross-Origin Support**: Enabled CORS for seamless communication between frontend and backend.
+- **Dockerized**: Easily run the entire stack with Docker and Docker Compose.
 
 ---
 
@@ -32,6 +34,11 @@ Welcome to the **Church Database Management System**, a web application designed
 
 ### Database
 - **SQL Server**: For storing and managing catechizing records.
+
+### Containerization
+- **Docker**: Containerizes frontend, backend, and database.
+- **Docker Compose**: Orchestrates multi-container setup.
+
 
 ---
 
