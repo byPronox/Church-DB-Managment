@@ -31,6 +31,9 @@ function Navbar() {
                     <li>
                         <Link to="/procedimientos" onClick={toggleMenu}>Procedimientos</Link>
                     </li>
+                    <li>
+                        <Link to="/crud" onClick={toggleMenu}>CRUD</Link>
+                    </li>
                 </ul>
             </div>
         </nav>
