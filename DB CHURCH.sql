@@ -214,8 +214,9 @@ WHERE Nombres = 'Ana' AND Apellidos = 'Martínez';
 GO
 
 -- =============================================
--- SCRIPT 2: IMPLEMENTACIÓN DE REGLAS DE NEGOCIO
+-- SCRIPT 2: IMPLEMENTACIÓN DE REGLAS DE NEGOCIO CON MANEJO DE ERRORES
 -- =============================================
+
 -- =============================================
 -- PROCEDIMIENTO: Registrar Catequizando
 -- =============================================
@@ -233,28 +234,31 @@ CREATE PROCEDURE sp_RegistrarCatequizando
 )
 AS
 BEGIN
-    IF @FeBautismo IS NULL OR LTRIM(RTRIM(@FeBautismo)) = ''
-    BEGIN
-        RAISERROR('El catequizando debe presentar fe de bautismo.',16,1);
-        RETURN;
-    END
+    BEGIN TRY
+        IF @FeBautismo IS NULL OR LTRIM(RTRIM(@FeBautismo)) = ''
+        BEGIN
+            RAISERROR('El catequizando debe presentar fe de bautismo.',16,1);
+            RETURN;
+        END
 
-    -- Verifica que la persona exista
-    IF NOT EXISTS (SELECT 1 FROM Persona WHERE Id_Persona = @IdPersona)
-    BEGIN
-        RAISERROR('No se encontró la persona.', 16, 1);
-        RETURN;
-    END
+        IF NOT EXISTS (SELECT 1 FROM Persona WHERE Id_Persona = @IdPersona)
+        BEGIN
+            RAISERROR('No se encontró la persona.', 16, 1);
+            RETURN;
+        END
 
-    -- Verifica que la inscripción exista
-    IF NOT EXISTS (SELECT 1 FROM Inscripcion WHERE id_Inscripcion = @IdInscripcion)
-    BEGIN
-        RAISERROR('No se encontró la inscripción.', 16, 1);
-        RETURN;
-    END
+        IF NOT EXISTS (SELECT 1 FROM Inscripcion WHERE id_Inscripcion = @IdInscripcion)
+        BEGIN
+            RAISERROR('No se encontró la inscripción.', 16, 1);
+            RETURN;
+        END
 
-    INSERT INTO Catequizando (Apellidos, Fecha_Nacimiento, Fe_Bautismo, Estado, Nombres, Persona_Id_Persona, Inscripcion_id_Inscripcion)
-    VALUES (@Apellidos, @FechaNacimiento, @FeBautismo, @Estado, @Nombres, @IdPersona, @IdInscripcion);
+        INSERT INTO Catequizando (Apellidos, Fecha_Nacimiento, Fe_Bautismo, Estado, Nombres, Persona_Id_Persona, Inscripcion_id_Inscripcion)
+        VALUES (@Apellidos, @FechaNacimiento, @FeBautismo, @Estado, @Nombres, @IdPersona, @IdInscripcion);
+    END TRY
+    BEGIN CATCH
+        PRINT ERROR_MESSAGE();
+    END CATCH
 END
 GO
 
@@ -273,34 +277,36 @@ CREATE PROCEDURE sp_InscribirCatequizando
 )
 AS
 BEGIN
-    -- Verifica si ya está inscrito activamente
-    IF EXISTS (
-        SELECT 1
-        FROM Inscripcion i
-        JOIN Catequizando c ON c.Inscripcion_id_Inscripcion = i.id_Inscripcion
-        WHERE c.id_catequizando = @IdCatequizando
-        AND i.Estado = 'Activo'
-    )
-    BEGIN
-        RAISERROR('El catequizando ya está inscrito en un nivel activo.',16,1);
-        RETURN;
-    END
+    BEGIN TRY
+        IF EXISTS (
+            SELECT 1
+            FROM Inscripcion i
+            JOIN Catequizando c ON c.Inscripcion_id_Inscripcion = i.id_Inscripcion
+            WHERE c.id_catequizando = @IdCatequizando AND i.Estado = 'Activo'
+        )
+        BEGIN
+            RAISERROR('Ya existe una inscripción activa para este catequizando.', 16, 1);
+            RETURN;
+        END
 
-    -- Verifica que el nivel exista
-    IF NOT EXISTS (SELECT 1 FROM Nivel_Catequesis WHERE id_NivelCatequesis = @IdNivel)
-    BEGIN
-        RAISERROR('Nivel de catequesis no encontrado.', 16, 1);
-        RETURN;
-    END
+        IF NOT EXISTS (SELECT 1 FROM Nivel_Catequesis WHERE id_NivelCatequesis = @IdNivel)
+        BEGIN
+            RAISERROR('Nivel de catequesis no encontrado.', 16, 1);
+            RETURN;
+        END
 
-    INSERT INTO Inscripcion (Certificado_Emitido, Estado, Fecha_Inscripcion, Nivel_Catequesis_id_NivelCatequesis)
-    VALUES (@CertificadoEmitido, @Estado, @Fecha, @IdNivel);
+        INSERT INTO Inscripcion (Certificado_Emitido, Estado, Fecha_Inscripcion, Nivel_Catequesis_id_NivelCatequesis)
+        VALUES (@CertificadoEmitido, @Estado, @Fecha, @IdNivel);
 
-    DECLARE @NewId INT = SCOPE_IDENTITY();
+        DECLARE @NewId INT = SCOPE_IDENTITY();
 
-    UPDATE Catequizando
-    SET Inscripcion_id_Inscripcion = @NewId
-    WHERE id_catequizando = @IdCatequizando;
+        UPDATE Catequizando
+        SET Inscripcion_id_Inscripcion = @NewId
+        WHERE id_catequizando = @IdCatequizando;
+    END TRY
+    BEGIN CATCH
+        PRINT ERROR_MESSAGE();
+    END CATCH
 END
 GO
 
@@ -318,14 +324,19 @@ CREATE PROCEDURE sp_RegistrarAsistencia
 )
 AS
 BEGIN
-    IF NOT EXISTS (SELECT 1 FROM Inscripcion WHERE id_Inscripcion = @Inscripcion_Id_Inscripcion)
-    BEGIN
-        RAISERROR('No existe la inscripción %d.',16,1,@Inscripcion_Id_Inscripcion);
-        RETURN;
-    END
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM Inscripcion WHERE id_Inscripcion = @Inscripcion_Id_Inscripcion)
+        BEGIN
+            RAISERROR('No existe la inscripción especificada.', 16, 1);
+            RETURN;
+        END
 
-    INSERT INTO Asistencia (id_Asistencia, Fecha, Presente, Inscripcion_id_Inscripcion)
-    VALUES (@id_Asistencia, @Fecha, @Presente, @Inscripcion_Id_Inscripcion);
+        INSERT INTO Asistencia (id_Asistencia, Fecha, Presente, Inscripcion_id_Inscripcion)
+        VALUES (@id_Asistencia, @Fecha, @Presente, @Inscripcion_Id_Inscripcion);
+    END TRY
+    BEGIN CATCH
+        PRINT ERROR_MESSAGE();
+    END CATCH
 END
 GO
 
@@ -342,19 +353,24 @@ CREATE PROCEDURE sp_RegistrarEvaluacion
 )
 AS
 BEGIN
-    IF NOT EXISTS (SELECT 1 FROM Inscripcion WHERE id_Inscripcion = @IdInscripcion)
-    BEGIN
-        RAISERROR('Inscripción no válida.', 16, 1);
-        RETURN;
-    END
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM Inscripcion WHERE id_Inscripcion = @IdInscripcion)
+        BEGIN
+            RAISERROR('Inscripción no válida.', 16, 1);
+            RETURN;
+        END
 
-    INSERT INTO Evaluacion (Calificacion, Observaciones)
-    VALUES (@Calificacion, @Observaciones);
+        INSERT INTO Evaluacion (Calificacion, Observaciones)
+        VALUES (@Calificacion, @Observaciones);
 
-    DECLARE @IdEval INT = SCOPE_IDENTITY();
+        DECLARE @IdEval INT = SCOPE_IDENTITY();
 
-    INSERT INTO Evaluacionv1 (Evaluacion_id_Evaluacion, Inscripcion_id_Inscripcion)
-    VALUES (@IdEval, @IdInscripcion);
+        INSERT INTO Evaluacionv1 (Evaluacion_id_Evaluacion, Inscripcion_id_Inscripcion)
+        VALUES (@IdEval, @IdInscripcion);
+    END TRY
+    BEGIN CATCH
+        PRINT ERROR_MESSAGE();
+    END CATCH
 END
 GO
 
@@ -369,15 +385,29 @@ CREATE PROCEDURE sp_EmitirCertificado
 )
 AS
 BEGIN
-    IF NOT EXISTS (SELECT 1 FROM Inscripcion WHERE id_Inscripcion = @IdInscripcion)
-    BEGIN
-        RAISERROR('Inscripción no encontrada.', 16, 1);
-        RETURN;
-    END
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM Inscripcion WHERE id_Inscripcion = @IdInscripcion)
+        BEGIN
+            RAISERROR('Inscripción no encontrada.', 16, 1);
+            RETURN;
+        END
 
-    UPDATE Inscripcion
-    SET Certificado_Emitido = 'Sí'
-    WHERE id_Inscripcion = @IdInscripcion;
+        IF EXISTS (
+            SELECT 1 FROM Inscripcion
+            WHERE id_Inscripcion = @IdInscripcion AND Estado != 'Aprobado'
+        )
+        BEGIN
+            RAISERROR('Solo se puede emitir certificado si el nivel está aprobado.', 16, 1);
+            RETURN;
+        END
+
+        UPDATE Inscripcion
+        SET Certificado_Emitido = 'Sí'
+        WHERE id_Inscripcion = @IdInscripcion;
+    END TRY
+    BEGIN CATCH
+        PRINT ERROR_MESSAGE();
+    END CATCH
 END
 GO
 
@@ -395,14 +425,19 @@ CREATE PROCEDURE sp_AsignarSacramento
 )
 AS
 BEGIN
-    IF NOT EXISTS (SELECT 1 FROM Catequizando WHERE id_catequizando = @IdCatequizando)
-    BEGIN
-        RAISERROR('Catequizando no encontrado.', 16, 1);
-        RETURN;
-    END
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM Catequizando WHERE id_catequizando = @IdCatequizando)
+        BEGIN
+            RAISERROR('Catequizando no encontrado.', 16, 1);
+            RETURN;
+        END
 
-    INSERT INTO Sacramento (Tipo_Sacramento, Fecha, Lugar, Catequizando_id_catequizando)
-    VALUES (@TipoSacramento, @Fecha, @Lugar, @IdCatequizando);
+        INSERT INTO Sacramento (Tipo_Sacramento, Fecha, Lugar, Catequizando_id_catequizando)
+        VALUES (@TipoSacramento, @Fecha, @Lugar, @IdCatequizando);
+    END TRY
+    BEGIN CATCH
+        PRINT ERROR_MESSAGE();
+    END CATCH
 END
 GO
 
@@ -459,7 +494,7 @@ GO
 
 
 -- =============================================
--- OPERACIONES CRUD PERSONA
+-- OPERACIONES CRUD PERSONA CON MANEJO DE ERRORES
 -- =============================================
 
 -- =============================================
@@ -474,8 +509,13 @@ CREATE PROCEDURE sp_InsertarPersona
     @Contacto       VARCHAR(15)
 AS
 BEGIN
-    INSERT INTO Persona (Nombres, Apellidos, Tipo_Persona, Contacto)
-    VALUES (@Nombres, @Apellidos, @Tipo_Persona, @Contacto);
+    BEGIN TRY
+        INSERT INTO Persona (Nombres, Apellidos, Tipo_Persona, Contacto)
+        VALUES (@Nombres, @Apellidos, @Tipo_Persona, @Contacto);
+    END TRY
+    BEGIN CATCH
+        PRINT ERROR_MESSAGE();
+    END CATCH
 END
 GO
 
@@ -487,9 +527,14 @@ GO
 CREATE PROCEDURE sp_ConsultarPersonas
 AS
 BEGIN
-    SELECT Id_Persona, Nombres, Apellidos, Tipo_Persona, Contacto
-    FROM Persona
-    ORDER BY Id_Persona;
+    BEGIN TRY
+        SELECT Id_Persona, Nombres, Apellidos, Tipo_Persona, Contacto
+        FROM Persona
+        ORDER BY Id_Persona;
+    END TRY
+    BEGIN CATCH
+        PRINT ERROR_MESSAGE();
+    END CATCH
 END
 GO
 
@@ -503,15 +548,20 @@ CREATE PROCEDURE sp_ActualizarPersona
     @NuevoContacto  VARCHAR(15)
 AS
 BEGIN
-    IF NOT EXISTS (SELECT 1 FROM Persona WHERE Id_Persona = @Id_Persona)
-    BEGIN
-        RAISERROR('La persona con el ID especificado no existe.', 16, 1);
-        RETURN;
-    END
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM Persona WHERE Id_Persona = @Id_Persona)
+        BEGIN
+            RAISERROR('La persona con el ID especificado no existe.', 16, 1);
+            RETURN;
+        END
 
-    UPDATE Persona
-    SET Contacto = @NuevoContacto
-    WHERE Id_Persona = @Id_Persona;
+        UPDATE Persona
+        SET Contacto = @NuevoContacto
+        WHERE Id_Persona = @Id_Persona;
+    END TRY
+    BEGIN CATCH
+        PRINT ERROR_MESSAGE();
+    END CATCH
 END
 GO
 
@@ -524,17 +574,21 @@ CREATE PROCEDURE sp_EliminarPersona
     @Id_Persona INT
 AS
 BEGIN
-    IF NOT EXISTS (SELECT 1 FROM Persona WHERE Id_Persona = @Id_Persona)
-    BEGIN
-        RAISERROR('La persona con el ID especificado no existe.', 16, 1);
-        RETURN;
-    END
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM Persona WHERE Id_Persona = @Id_Persona)
+        BEGIN
+            RAISERROR('La persona con el ID especificado no existe.', 16, 1);
+            RETURN;
+        END
 
-    DELETE FROM Persona
-    WHERE Id_Persona = @Id_Persona;
+        DELETE FROM Persona
+        WHERE Id_Persona = @Id_Persona;
+    END TRY
+    BEGIN CATCH
+        PRINT ERROR_MESSAGE();
+    END CATCH
 END
 GO
-
 
 
 -- =============================================
