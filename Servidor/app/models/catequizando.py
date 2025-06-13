@@ -1,56 +1,88 @@
 from app.db import get_connection
+from bson.objectid import ObjectId
 
 class Catequizando:
     def __init__(self, data):
         self.nombres = data.get('nombres')
         self.apellidos = data.get('apellidos')
+        self.contacto = data.get('contacto')
         self.fecha_nacimiento = data.get('fechaNacimiento')
         self.fe_bautismo = data.get('feBautismo')
-        self.estado = data.get('estado')
-        self.id_persona = data.get('idPersona')
-        self.id_inscripcion = data.get('idInscripcion')
+        self.inscripciones = data.get('inscripciones', [])
+        self.sacramentos = data.get('sacramentos', [])
 
-    def registrar(self):
-        conn = get_connection()
-        cursor = conn.cursor()
+    @staticmethod
+    def get_all():
+        db = get_connection()
+        catequizandos_collection = db['Catequizandos']
         try:
-            cursor.execute("""
-                EXEC sp_RegistrarCatequizando
-                    @Nombres = ?,
-                    @Apellidos = ?,
-                    @FechaNacimiento = ?,
-                    @FeBautismo = ?,
-                    @Estado = ?,
-                    @IdPersona = ?,
-                    @IdInscripcion = ?
-            """, (self.nombres, self.apellidos, self.fecha_nacimiento, self.fe_bautismo,
-                  self.estado, self.id_persona, self.id_inscripcion))
-            conn.commit()
+            # Fetch all documents and convert ObjectId to string for JSON serialization
+            catequizandos = catequizandos_collection.find()
+            return [
+                {
+                    "_id": str(catequizando["_id"]),
+                    "nombres": catequizando["nombres"],
+                    "apellidos": catequizando["apellidos"],
+                    "contacto": catequizando["contacto"],
+                    "fecha_nacimiento": catequizando["fecha_nacimiento"],
+                    "fe_bautismo": catequizando["fe_bautismo"],
+                    "inscripciones": catequizando["inscripciones"],
+                    "sacramentos": catequizando["sacramentos"],
+                }
+                for catequizando in catequizandos
+            ]
+        except Exception as e:
+            raise Exception(f"Error fetching catequizandos: {str(e)}")
+
+    @staticmethod
+    def get_by_id(catequizando_id):
+        db = get_connection()
+        catequizandos_collection = db['Catequizandos']
+        return catequizandos_collection.find_one({"_id": ObjectId(catequizando_id)})
+
+    def create(self):
+        db = get_connection()
+        catequizandos_collection = db['Catequizandos']
+        try:
+            result = catequizandos_collection.insert_one({
+                "nombres": self.nombres,
+                "apellidos": self.apellidos,
+                "contacto": self.contacto,
+                "fecha_nacimiento": self.fecha_nacimiento,
+                "fe_bautismo": self.fe_bautismo,
+                "inscripciones": self.inscripciones,
+                "sacramentos": self.sacramentos
+            })
+            return str(result.inserted_id), None
+        except Exception as e:
+            return None, str(e)
+
+    def update(self, catequizando_id):
+        db = get_connection()
+        catequizandos_collection = db['Catequizandos']
+        try:
+            catequizandos_collection.update_one(
+                {"_id": ObjectId(catequizando_id)},
+                {"$set": {
+                    "nombres": self.nombres,
+                    "apellidos": self.apellidos,
+                    "contacto": self.contacto,
+                    "fecha_nacimiento": self.fecha_nacimiento,
+                    "fe_bautismo": self.fe_bautismo,
+                    "inscripciones": self.inscripciones,
+                    "sacramentos": self.sacramentos
+                }}
+            )
             return True, None
         except Exception as e:
             return False, str(e)
-        finally:
-            cursor.close()
-            conn.close()
-            
-            
-            
-    def inscribir(self, id_nivel, fecha, estado, certificado_emitido):
-        conn = get_connection()
-        cursor = conn.cursor()
+
+    @staticmethod
+    def delete(catequizando_id):
+        db = get_connection()
+        catequizandos_collection = db['Catequizandos']
         try:
-            cursor.execute("""
-                EXEC sp_InscribirCatequizando
-                    @IdCatequizando = ?,
-                    @IdNivel = ?,
-                    @Fecha = ?,
-                    @Estado = ?,
-                    @CertificadoEmitido = ?
-            """, (self.id_persona, id_nivel, fecha, estado, certificado_emitido))
-            conn.commit()
+            catequizandos_collection.delete_one({"_id": ObjectId(catequizando_id)})
             return True, None
         except Exception as e:
             return False, str(e)
-        finally:
-            cursor.close()
-            conn.close()

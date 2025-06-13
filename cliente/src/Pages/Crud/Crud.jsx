@@ -4,109 +4,143 @@ import './Crud.css';
 
 function Crud() {
     const [tablaSeleccionada, setTablaSeleccionada] = useState('');
-    const [personas, setPersonas] = useState([]);
-    const [form, setForm] = useState({ nombres: '', apellidos: '', tipoPersona: '', contacto: '' });
-    const [editId, setEditId] = useState(null);
-    const [nuevoContacto, setNuevoContacto] = useState('');
+    const [catequizandos, setCatequizandos] = useState([]);
+    const [form, setForm] = useState({
+        nombres: '',
+        apellidos: '',
+        contacto: '',
+        fechaNacimiento: '',
+        feBautismo: false,
+        inscripciones: [],
+        sacramentos: [],
+    });
 
-    // Listar personas
-    const fetchPersonas = async () => {
-        const res = await axios.get('http://127.0.0.1:5000/api/persona');
-        setPersonas(res.data);
+    // Fetch catequizandos from the backend
+    const fetchCatequizandos = async () => {
+        try {
+            const res = await axios.get('http://127.0.0.1:5000/api/catequizando');
+            setCatequizandos(res.data);
+        } catch (error) {
+            console.error('Error fetching catequizandos:', error);
+        }
     };
 
     useEffect(() => {
-        if (tablaSeleccionada === 'Persona') {
-            fetchPersonas();
+        if (tablaSeleccionada === 'Catequizandos') {
+            fetchCatequizandos();
         }
     }, [tablaSeleccionada]);
 
-    // Crear persona
+    // Handle form submission to create a new catequizando
     const handleSubmit = async (e) => {
         e.preventDefault();
-        await axios.post('http://127.0.0.1:5000/api/persona', form);
-        setForm({ nombres: '', apellidos: '', tipoPersona: '', contacto: '' });
-        fetchPersonas();
-    };
-
-    // Actualizar persona
-    const handleUpdate = async (id) => {
-        await axios.put(`http://127.0.0.1:5000/api/persona/${id}`, { nuevoContacto });
-        setEditId(null);
-        setNuevoContacto('');
-        fetchPersonas();
-    };
-
-    // Eliminar persona
-    const handleDelete = async (id) => {
-        await axios.delete(`http://127.0.0.1:5000/api/persona/${id}`);
-        fetchPersonas();
+        try {
+            await axios.post('http://127.0.0.1:5000/api/catequizando', form);
+            setForm({
+                nombres: '',
+                apellidos: '',
+                contacto: '',
+                fechaNacimiento: '',
+                feBautismo: false,
+                inscripciones: [],
+                sacramentos: [],
+            });
+            fetchCatequizandos();
+        } catch (error) {
+            console.error('Error creating catequizando:', error);
+        }
     };
 
     return (
         <div className="crud-container">
-            <h2 className="crud-title">CRUD</h2>
-            {/* Selector de tabla */}
+            <h2 className="crud-title">CRUD - Catequizandos</h2>
             <form>
                 <label className="form-label" htmlFor="tabla">Selecciona la tabla:</label>
                 <select
                     id="tabla"
                     value={tablaSeleccionada}
-                    onChange={e => setTablaSeleccionada(e.target.value)}
+                    onChange={(e) => setTablaSeleccionada(e.target.value)}
                     required
                 >
                     <option value="">-- Selecciona una tabla --</option>
-                    <option value="Persona">Persona</option>
-                    {/* A futuro puedes agregar más opciones aquí */}
+                    <option value="Catequizandos">Catequizandos</option>
                 </select>
             </form>
 
-            {/* Solo muestra el CRUD si se seleccionó una tabla */}
-            {tablaSeleccionada === 'Persona' && (
+            {/* CRUD para Catequizandos */}
+            {tablaSeleccionada === 'Catequizandos' && (
                 <>
                     <form onSubmit={handleSubmit}>
                         <label className="form-label">Nombres</label>
-                        <input placeholder="Nombres" value={form.nombres} onChange={e => setForm({ ...form, nombres: e.target.value })} required />
+                        <input
+                            placeholder="Nombres"
+                            value={form.nombres}
+                            onChange={(e) => setForm({ ...form, nombres: e.target.value })}
+                            required
+                        />
                         <label className="form-label">Apellidos</label>
-                        <input placeholder="Apellidos" value={form.apellidos} onChange={e => setForm({ ...form, apellidos: e.target.value })} required />
-                        <label className="form-label">Tipo Persona</label>
-                        <input placeholder="Tipo Persona" value={form.tipoPersona} onChange={e => setForm({ ...form, tipoPersona: e.target.value })} required />
+                        <input
+                            placeholder="Apellidos"
+                            value={form.apellidos}
+                            onChange={(e) => setForm({ ...form, apellidos: e.target.value })}
+                            required
+                        />
                         <label className="form-label">Contacto</label>
-                        <input placeholder="Contacto" value={form.contacto} onChange={e => setForm({ ...form, contacto: e.target.value })} required />
+                        <input
+                            placeholder="Contacto"
+                            value={form.contacto}
+                            onChange={(e) => setForm({ ...form, contacto: e.target.value })}
+                            required
+                        />
+                        <label className="form-label">Fecha de Nacimiento</label>
+                        <input
+                            type="date"
+                            value={form.fechaNacimiento}
+                            onChange={(e) => setForm({ ...form, fechaNacimiento: e.target.value })}
+                            required
+                        />
+                        <label className="form-label">Fe Bautismo</label>
+                        <input
+                            type="checkbox"
+                            checked={form.feBautismo}
+                            onChange={(e) => setForm({ ...form, feBautismo: e.target.checked })}
+                        />
                         <button type="submit">Crear</button>
                     </form>
-                    <table className="crud-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th><th>Nombres</th><th>Apellidos</th><th>Tipo</th><th>Contacto</th><th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {personas.map(p => (
-                                <tr key={p.Id_Persona}>
-                                    <td>{p.Id_Persona}</td>
-                                    <td>{p.Nombres}</td>
-                                    <td>{p.Apellidos}</td>
-                                    <td>{p.Tipo_Persona}</td>
-                                    <td>
-                                        {editId === p.Id_Persona ? (
-                                            <input value={nuevoContacto} onChange={e => setNuevoContacto(e.target.value)} />
-                                        ) : (
-                                            p.Contacto
-                                        )}
-                                    </td>
-                                    <td>
-                                        {editId === p.Id_Persona ? (
-                                            <button type="button" onClick={() => handleUpdate(p.Id_Persona)}>Guardar</button>
-                                        ) : (
-                                            <button type="button" onClick={() => { setEditId(p.Id_Persona); setNuevoContacto(p.Contacto); }}>Editar</button>
-                                        )}
-                                        <button type="button" onClick={() => handleDelete(p.Id_Persona)}>Eliminar</button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+
+                    {/* Render documents */}
+                    <div className="documents-container">
+                        {catequizandos.map((doc) => (
+                            <div key={doc._id} className="document-card">
+                                <h3>Documento ID: {doc._id}</h3>
+                                <p><strong>Nombres:</strong> {doc.nombres}</p>
+                                <p><strong>Apellidos:</strong> {doc.apellidos}</p>
+                                <p><strong>Contacto:</strong> {doc.contacto}</p>
+                                <p><strong>Fecha de Nacimiento:</strong> {new Date(doc.fecha_nacimiento).toLocaleDateString()}</p>
+                                <p><strong>Fe Bautismo:</strong> {doc.fe_bautismo ? 'Sí' : 'No'}</p>
+                                <p><strong>Sacramentos:</strong></p>
+                                <ul>
+                                    {doc.sacramentos.map((sacramento, index) => (
+                                        <li key={index}>
+                                            <p><strong>Tipo:</strong> {sacramento.tipo_sacramento}</p>
+                                            <p><strong>Lugar:</strong> {sacramento.lugar}</p>
+                                            <p><strong>Fecha:</strong> {new Date(sacramento.fecha).toLocaleDateString()}</p>
+                                        </li>
+                                    ))}
+                                </ul>
+                                <p><strong>Inscripciones:</strong></p>
+                                <ul>
+                                    {doc.inscripciones.map((inscripcion, index) => (
+                                        <li key={index}>
+                                            <p><strong>Estado:</strong> {inscripcion.estado}</p>
+                                            <p><strong>Fecha Inscripción:</strong> {new Date(inscripcion.fecha_inscripcion).toLocaleDateString()}</p>
+                                            <p><strong>Certificado Emitido:</strong> {inscripcion.certificado_emitido ? 'Sí' : 'No'}</p>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ))}
+                    </div>
                 </>
             )}
         </div>

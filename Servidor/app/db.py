@@ -1,18 +1,7 @@
-import pyodbc
+from pymongo import MongoClient
 
 def get_connection():
-    CONTROLADOR_ODBC = 'ODBC Driver 17 for SQL Server'
-    NAME_SERVER = 'localhost'
-    DATABASE = 'Iglesia'
-    USERNAME = 'pythonconect'
-    PASSWORD = 'UDLA'
-
-    CONNECTION_STRING = (
-        f'DRIVER={CONTROLADOR_ODBC};'
-        f'SERVER={NAME_SERVER};'
-        f'DATABASE={DATABASE};'
-        f'UID={USERNAME};'
-        f'PWD={PASSWORD}'
-    )
-
-    return pyodbc.connect(CONNECTION_STRING)
+    CONNECTION_STRING = "mongodb+srv://admin:admin@iglesiacluster.a3pa34m.mongodb.net/"
+    client = MongoClient(CONNECTION_STRING)
+    db = client['Iglesia'] 
+    return db
