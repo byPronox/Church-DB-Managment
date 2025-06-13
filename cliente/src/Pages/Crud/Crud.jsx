@@ -14,6 +14,7 @@ function Crud() {
         inscripciones: [],
         sacramentos: [],
     });
+    const [editId, setEditId] = useState(null); // Track the ID of the document being edited
 
     // Fetch catequizandos from the backend
     const fetchCatequizandos = async () => {
@@ -31,11 +32,18 @@ function Crud() {
         }
     }, [tablaSeleccionada]);
 
-    // Handle form submission to create a new catequizando
+    // Handle form submission to create or update a catequizando
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('http://127.0.0.1:5000/api/catequizando', form);
+            if (editId) {
+                // Update existing catequizando
+                await axios.put(`http://127.0.0.1:5000/api/catequizando/${editId}`, form);
+                setEditId(null); // Reset editId after updating
+            } else {
+                // Create new catequizando
+                await axios.post('http://127.0.0.1:5000/api/catequizando', form);
+            }
             setForm({
                 nombres: '',
                 apellidos: '',
@@ -47,8 +55,32 @@ function Crud() {
             });
             fetchCatequizandos();
         } catch (error) {
-            console.error('Error creating catequizando:', error);
+            console.error(`Error ${editId ? 'updating' : 'creating'} catequizando:`, error);
         }
+    };
+
+    // Handle delete action
+    const handleDelete = async (id) => {
+        try {
+            await axios.delete(`http://127.0.0.1:5000/api/catequizando/${id}`);
+            fetchCatequizandos();
+        } catch (error) {
+            console.error('Error deleting catequizando:', error);
+        }
+    };
+
+    // Handle edit action
+    const handleEdit = (doc) => {
+        setEditId(doc._id); // Set the ID of the document being edited
+        setForm({
+            nombres: doc.nombres,
+            apellidos: doc.apellidos,
+            contacto: doc.contacto,
+            fechaNacimiento: doc.fecha_nacimiento,
+            feBautismo: doc.fe_bautismo,
+            inscripciones: doc.inscripciones,
+            sacramentos: doc.sacramentos,
+        });
     };
 
     return (
@@ -67,7 +99,6 @@ function Crud() {
                 </select>
             </form>
 
-            {/* CRUD para Catequizandos */}
             {tablaSeleccionada === 'Catequizandos' && (
                 <>
                     <form onSubmit={handleSubmit}>
@@ -105,7 +136,7 @@ function Crud() {
                             checked={form.feBautismo}
                             onChange={(e) => setForm({ ...form, feBautismo: e.target.checked })}
                         />
-                        <button type="submit">Crear</button>
+                        <button type="submit">{editId ? 'Actualizar' : 'Crear'}</button>
                     </form>
 
                     {/* Render documents */}
@@ -138,6 +169,8 @@ function Crud() {
                                         </li>
                                     ))}
                                 </ul>
+                                <button onClick={() => handleEdit(doc)}>Editar</button>
+                                <button onClick={() => handleDelete(doc._id)}>Eliminar</button>
                             </div>
                         ))}
                     </div>
