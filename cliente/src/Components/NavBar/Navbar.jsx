@@ -29,9 +29,6 @@ function Navbar() {
                         <Link to="/reglas-negocio" onClick={toggleMenu}>Reglas del Negocio</Link>
                     </li>
                     <li>
-                        <Link to="/procedimientos" onClick={toggleMenu}>Procedimientos</Link>
-                    </li>
-                    <li>
                         <Link to="/crud" onClick={toggleMenu}>CRUD</Link>
                     </li>
                 </ul>
