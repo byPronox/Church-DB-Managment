@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import CrudCatequizandos from './CRUDS/CrudCatequizandos';
 import CrudParroquias from './CRUDS/CrudParroquias';
+import CrudCatequistas from './CRUDS/CrudCatequistas';
 import './Crud.css';
 
 function Crud() {
@@ -20,11 +21,13 @@ function Crud() {
                     <option value="">-- Selecciona una tabla --</option>
                     <option value="Catequizandos">Catequizandos</option>
                     <option value="Parroquias">Parroquias</option>
+                    <option value="Catequistas">Catequistas</option>
                 </select>
             </form>
 
             {tablaSeleccionada === 'Catequizandos' && <CrudCatequizandos />}
             {tablaSeleccionada === 'Parroquias' && <CrudParroquias />}
+            {tablaSeleccionada === 'Catequistas' && <CrudCatequistas />}
         </div>
     );
 }
