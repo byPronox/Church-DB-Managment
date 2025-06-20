@@ -5,29 +5,29 @@ import CrudCatequistas from './CRUDS/CrudCatequistas';
 import './Crud.css';
 
 function Crud() {
-    const [tablaSeleccionada, setTablaSeleccionada] = useState('');
+    const [coleccionSeleccionada, setColeccionSeleccionada] = useState('');
 
     return (
         <div className="crud-container">
             <h2 className="crud-title">CRUD</h2>
             <form>
-                <label className="form-label" htmlFor="tabla">Selecciona la tabla:</label>
+                <label className="form-label" htmlFor="coleccion">Selecciona la colección:</label>
                 <select
-                    id="tabla"
-                    value={tablaSeleccionada}
-                    onChange={(e) => setTablaSeleccionada(e.target.value)}
+                    id="coleccion"
+                    value={coleccionSeleccionada}
+                    onChange={(e) => setColeccionSeleccionada(e.target.value)}
                     required
                 >
-                    <option value="">-- Selecciona una tabla --</option>
+                    <option value="">-- Selecciona una colección --</option>
                     <option value="Catequizandos">Catequizandos</option>
                     <option value="Parroquias">Parroquias</option>
                     <option value="Catequistas">Catequistas</option>
                 </select>
             </form>
 
-            {tablaSeleccionada === 'Catequizandos' && <CrudCatequizandos />}
-            {tablaSeleccionada === 'Parroquias' && <CrudParroquias />}
-            {tablaSeleccionada === 'Catequistas' && <CrudCatequistas />}
+            {coleccionSeleccionada === 'Catequizandos' && <CrudCatequizandos />}
+            {coleccionSeleccionada === 'Parroquias' && <CrudParroquias />}
+            {coleccionSeleccionada === 'Catequistas' && <CrudCatequistas />}
         </div>
     );
 }

@@ -46,7 +46,7 @@ Welcome to the **Church Database Management System**, a web application designed
 
 2. Install the required dependencies:
    ```bash
-   pip install flask flask-cors pyodbc
+   pip install flask flask-cors pyodbc pymongo
    ```
 
 3. Start the Flask server:
