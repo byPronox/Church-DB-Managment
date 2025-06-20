@@ -1,6 +1,6 @@
 # Church Database Management System
 
-Welcome to the **Church Database Management System**, a web application designed to help manage catechizing records for a church. This project combines a modern frontend built with React and a robust backend powered by Flask, with SQL Server as the database.
+Welcome to the **Church Database Management System**, a web application designed to help manage catechizing records for a church. This project combines a modern frontend built with React and a robust backend powered by Flask, with MongoDB as the NoSQL database for flexible document storage.
 
 <p align="center">
   <img src="./cliente/src/assets/images/PHOTO_MAIN.PNG"/>
@@ -13,8 +13,9 @@ Welcome to the **Church Database Management System**, a web application designed
 - **User-Friendly Interface**: A clean and intuitive UI for managing catechizing records.
 - **Dynamic Frontend**: Built with React for a responsive and interactive experience.
 - **Powerful Backend**: Flask-based RESTful API for efficient data handling.
-- **Database Integration**: SQL Server for secure and reliable data storage.
+- **NoSQL Database Integration**: MongoDB for flexible document storage and complex data relationships.
 - **Cross-Origin Support**: Enabled CORS for seamless communication between frontend and backend.
+- **Document-Based Architecture**: Leverage MongoDB's document structure for nested data like sacraments and inscriptions.
 
 ---
 
@@ -28,10 +29,11 @@ Welcome to the **Church Database Management System**, a web application designed
 ### Backend
 - **Flask**: For creating the RESTful API.
 - **Flask-CORS**: For handling cross-origin requests.
-- **PyODBC**: For connecting to the SQL Server database.
+- **PyMongo**: For connecting to the MongoDB database.
+- **BSON**: For handling MongoDB ObjectIds and data types.
 
 ### Database
-- **SQL Server**: For storing and managing catechizing records.
+- **MongoDB**: NoSQL document database for storing catechizing records with flexible schema.
 
 ---
 
@@ -46,7 +48,7 @@ Welcome to the **Church Database Management System**, a web application designed
 
 2. Install the required dependencies:
    ```bash
-   pip install flask flask-cors pyodbc pymongo
+   pip install flask flask-cors pymongo bson
    ```
 
 3. Start the Flask server:
@@ -76,7 +78,7 @@ Welcome to the **Church Database Management System**, a web application designed
 ## Project Structure
 
 ```
-Iglesia/
+Church-DB-Management/
 ├── cliente/          # React frontend
 │   ├── src/
 │   │   ├── app/
@@ -89,20 +91,30 @@ Iglesia/
 │   │   ├── Pages/
 │   │   │   ├── Inicio.jsx
 │   │   │   ├── ReglasNegocio.jsx
-│   │   │   ├── Procedimientos/
-│   │   │   │   ├── RegistrarCatequizando.jsx
-│   │   │   │   ├── InscribirCatequizando.jsx
-│   │   │   │   └── (otros procedimientos)
+│   │   │   └── Crud/
+│   │   │       ├── Crud.jsx
+│   │   │       ├── Crud.css
+│   │   │       └── CRUDS/
+│   │   │           ├── CrudCatequizandos.jsx
+│   │   │           ├── CrudParroquias.jsx
+│   │   │           └── CrudCatequistas.jsx
 │   │   ├── index.js
 │   │   └── index.css
-├── servidor/         # Flask backend
+├── Servidor/         # Flask backend
 │   ├── app/
+│   │   ├── __init__.py
 │   │   ├── db.py
 │   │   ├── models/
-│   │   │   └── catequizando.py
+│   │   │   ├── catequizando.py
+│   │   │   ├── parroquia.py
+│   │   │   └── catequista.py
 │   │   └── routes/
-│   │       └── catequizando.py
+│   │       ├── catequizando.py
+│   │       ├── parroquia.py
+│   │       └── catequista.py
+│   ├── requirements.txt
 │   └── run.py
+├── DB CHURCH.sql     # Legacy SQL schema (for reference)
 └── README.md         # Documentation
 ```
 
@@ -110,27 +122,78 @@ Iglesia/
 
 ## How to Use
 
-1. Start both the backend and frontend servers.
-2. Open your browser and go to: [http://localhost:3000](http://localhost:3000)
-3. Use the navigation bar to:
+1. **Setup MongoDB**: Make sure you have MongoDB Atlas or local MongoDB instance running.
+2. **Configure Database Connection**: Update the connection string in `Servidor/app/db.py`.
+3. Start both the backend and frontend servers.
+4. Open your browser and go to: [http://localhost:3000](http://localhost:3000)
+5. Use the navigation bar to:
    - View the **Inicio** page with a welcome message.
    - Access the **Reglas del Negocio** page to understand the business rules.
-   - Access the **Procedimientos** page to interact with the stored procedures.
-4. Fill out the forms to register or manage catechizing records. The data will be securely stored in the SQL Server database.
+   - Access the **CRUD** page to manage collections (Catequizandos, Parroquias, Catequistas).
+6. Select a collection and perform CRUD operations. The data will be stored in MongoDB as flexible documents.
 
 ---
 
-## Stored Procedures
+## MongoDB Collections
 
-The system integrates the following stored procedures:
+The system uses the following MongoDB collections with schema validation:
 
-1. **Registrar Catequizando**: Registers a new catechizing record.
-2. **Inscribir Catequizando**: Enrolls a catechizing record in a catechesis level.
-3. **Registrar Asistencia**: Records attendance for a catechizing record.
-4. **Registrar Evaluación**: Records an evaluation for a catechizing record.
-5. **Emitir Certificado**: Issues a certificate for a catechizing record.
-6. **Asignar Sacramento**: Assigns a sacrament to a catechizing record.
-7. **Verificar Aprobación**: Checks if a catechizing record meets the requirements for approval.
+### 1. **catequizandos** Collection
+- **nombres**: String (required)
+- **apellidos**: String (required)
+- **fecha_nacimiento**: Date (required)
+- **contacto**: String (required)
+- **fe_bautismo**: Boolean (required)
+- **sacramentos**: Array of documents with:
+  - tipo_sacramento: String
+  - fecha: Date
+  - lugar: String
+- **inscripciones**: Array of documents with:
+  - inscripcion_id: ObjectId
+  - parroquia_id: ObjectId
+  - nivel_id: ObjectId
+  - fecha_inscripcion: Date
+  - estado: String
+  - certificado_emitido: Boolean
+  - asistencias: Array of attendance records
+  - evaluacion: Object with calificacion and observaciones
+
+### 2. **parroquias** Collection
+- **nombre**: String (required)
+- **telefono**: String
+- **direccion**: Object with calle and ciudad
+- **niveles_catequesis**: Array of catechesis levels
+
+### 3. **catequistas** Collection
+- **nombres**: String (required)
+- **apellidos**: String (required)
+- **rol**: String (required)
+- **contacto**: String (required)
+
+---
+
+## API Endpoints
+
+### Catequizandos
+- `GET /api/catequizando` - Get all catequizandos
+- `GET /api/catequizando/<id>` - Get catequizando by ID
+- `POST /api/catequizando` - Create new catequizando
+- `PUT /api/catequizando/<id>` - Update catequizando
+- `DELETE /api/catequizando/<id>` - Delete catequizando
+
+### Parroquias
+- `GET /api/parroquia` - Get all parroquias
+- `GET /api/parroquia/<id>` - Get parroquia by ID
+- `POST /api/parroquia` - Create new parroquia
+- `PUT /api/parroquia/<id>` - Update parroquia
+- `DELETE /api/parroquia/<id>` - Delete parroquia
+
+### Catequistas
+- `GET /api/catequista` - Get all catequistas
+- `GET /api/catequista/<id>` - Get catequista by ID
+- `POST /api/catequista` - Create new catequista
+- `PUT /api/catequista/<id>` - Update catequista
+- `DELETE /api/catequista/<id>` - Delete catequista
 
 ---
 
