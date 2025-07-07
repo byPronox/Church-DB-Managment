@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './Navbar.css';
 
-function Navbar() {
+function Navbar({ onLogout }) {
     const [menuOpen, setMenuOpen] = useState(false);
 
     const toggleMenu = () => {
@@ -10,8 +10,13 @@ function Navbar() {
     };
 
     return (
-        <nav>
+        <nav className="navbar">
             <div className="navbar-container">
+                <div className="navbar-brand">
+                    <span className="brand-icon">⛪</span>
+                    <span className="brand-text">Gestión Eclesiástica</span>
+                </div>
+
                 {/* Menu Icon for Mobile */}
                 <div className={`menu-icon ${menuOpen ? 'hidden' : ''}`} onClick={toggleMenu}>
                     ☰
@@ -23,13 +28,28 @@ function Navbar() {
                 {/* Navbar Links */}
                 <ul className={`navbar-links ${menuOpen ? 'open' : ''}`}>
                     <li>
-                        <Link to="/" onClick={toggleMenu}>Inicio</Link>
+                        <Link to="/" onClick={toggleMenu}>
+                            <span className="nav-icon">🏠</span>
+                            Dashboard
+                        </Link>
                     </li>
                     <li>
-                        <Link to="/reglas-negocio" onClick={toggleMenu}>Reglas del Negocio</Link>
+                        <Link to="/reglas-negocio" onClick={toggleMenu}>
+                            <span className="nav-icon">📋</span>
+                            Reglas del Negocio
+                        </Link>
                     </li>
                     <li>
-                        <Link to="/crud" onClick={toggleMenu}>CRUD</Link>
+                        <Link to="/crud" onClick={toggleMenu}>
+                            <span className="nav-icon">⚙️</span>
+                            Gestión
+                        </Link>
+                    </li>
+                    <li>
+                        <button className="logout-btn" onClick={onLogout}>
+                            <span className="nav-icon">🚪</span>
+                            Cerrar Sesión
+                        </button>
                     </li>
                 </ul>
             </div>

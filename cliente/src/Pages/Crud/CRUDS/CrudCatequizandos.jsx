@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../Crud.css';
-import '../Crud.css';
 
 function CrudCatequizandos() {
     const [catequizandos, setCatequizandos] = useState([]);
+    const [loading, setLoading] = useState(false);
     const [form, setForm] = useState({
         nombres: '',
         apellidos: '',
@@ -15,6 +15,7 @@ function CrudCatequizandos() {
         sacramentos: [],
     });
     const [editId, setEditId] = useState(null);
+    const [showForm, setShowForm] = useState(false);
     const [newSacramento, setNewSacramento] = useState({
         tipo_sacramento: '',
         fecha: '',
@@ -30,16 +31,44 @@ function CrudCatequizandos() {
 
     // Fetch catequizandos from the backend
     const fetchCatequizandos = async () => {
+        setLoading(true);
         try {
             const res = await axios.get('http://127.0.0.1:5000/api/catequizando');
             setCatequizandos(res.data);
         } catch (error) {
-            console.error('Error fetching catequizandos:', error);        }
+            console.error('Error fetching catequizandos:', error);
+            alert('Error al cargar los catequizandos. Verifique la conexión con el servidor.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     useEffect(() => {
         fetchCatequizandos();
     }, []);
+
+    // Reset form
+    const resetForm = () => {
+        setForm({
+            nombres: '',
+            apellidos: '',
+            contacto: '',
+            fechaNacimiento: '',
+            feBautismo: false,
+            inscripciones: [],
+            sacramentos: [],
+        });
+        setNewSacramento({ tipo_sacramento: '', fecha: '', lugar: '' });
+        setNewInscripcion({
+            parroquia_id: '',
+            nivel_id: '',
+            fecha_inscripcion: '',
+            estado: 'Activo',
+            certificado_emitido: false
+        });
+        setEditId(null);
+        setShowForm(false);
+    };
 
     // Add sacramento to form
     const addSacramento = () => {
@@ -90,235 +119,223 @@ function CrudCatequizandos() {
     // Handle form submission to create or update a catequizando
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         try {
             if (editId) {
                 // Update existing catequizando
                 await axios.put(`http://127.0.0.1:5000/api/catequizando/${editId}`, form);
-                setEditId(null); // Reset editId after updating
+                alert('Catequizando actualizado exitosamente');
             } else {
                 // Create new catequizando
                 await axios.post('http://127.0.0.1:5000/api/catequizando', form);
-            }            setForm({
-                nombres: '',
-                apellidos: '',
-                contacto: '',
-                fechaNacimiento: '',
-                feBautismo: false,
-                inscripciones: [],
-                sacramentos: [],
-            });
-            setNewSacramento({ tipo_sacramento: '', fecha: '', lugar: '' });
-            setNewInscripcion({
-                parroquia_id: '',
-                nivel_id: '',
-                fecha_inscripcion: '',
-                estado: 'Activo',
-                certificado_emitido: false
-            });
-            setNewSacramento({ tipo_sacramento: '', fecha: '', lugar: '' });
-            setNewInscripcion({
-                parroquia_id: '',
-                nivel_id: '',
-                fecha_inscripcion: '',
-                estado: 'Activo',
-                certificado_emitido: false
-            });
+                alert('Catequizando creado exitosamente');
+            }
+            resetForm();
             fetchCatequizandos();
         } catch (error) {
             console.error(`Error ${editId ? 'updating' : 'creating'} catequizando:`, error);
+            alert(`Error al ${editId ? 'actualizar' : 'crear'} el catequizando`);
+        } finally {
+            setLoading(false);
         }
     };
 
     // Handle delete action
     const handleDelete = async (id) => {
-        try {
-            await axios.delete(`http://127.0.0.1:5000/api/catequizando/${id}`);
-            fetchCatequizandos();
-        } catch (error) {
-            console.error('Error deleting catequizando:', error);
+        if (window.confirm('¿Está seguro de que desea eliminar este catequizando?')) {
+            setLoading(true);
+            try {
+                await axios.delete(`http://127.0.0.1:5000/api/catequizando/${id}`);
+                alert('Catequizando eliminado exitosamente');
+                fetchCatequizandos();
+            } catch (error) {
+                console.error('Error deleting catequizando:', error);
+                alert('Error al eliminar el catequizando');
+            } finally {
+                setLoading(false);
+            }
         }
     };
 
     // Handle edit action
     const handleEdit = (doc) => {
-        setEditId(doc._id); // Set the ID of the document being edited
+        setEditId(doc._id);
         setForm({
             nombres: doc.nombres,
             apellidos: doc.apellidos,
             contacto: doc.contacto,
-            fechaNacimiento: doc.fecha_nacimiento,
+            fechaNacimiento: doc.fecha_nacimiento ? doc.fecha_nacimiento.split('T')[0] : '',
             feBautismo: doc.fe_bautismo,
-            inscripciones: doc.inscripciones,
-            sacramentos: doc.sacramentos,
+            inscripciones: doc.inscripciones || [],
+            sacramentos: doc.sacramentos || [],
         });
+        setShowForm(true);
     };
 
     return (
-        <>
-            <form onSubmit={handleSubmit}>
-                <label className="form-label">Nombres</label>
-                <input
-                    placeholder="Nombres"
-                    value={form.nombres}
-                    onChange={(e) => setForm({ ...form, nombres: e.target.value })}
-                    required
-                />
-                <label className="form-label">Apellidos</label>
-                <input
-                    placeholder="Apellidos"
-                    value={form.apellidos}
-                    onChange={(e) => setForm({ ...form, apellidos: e.target.value })}
-                    required
-                />
-                <label className="form-label">Contacto</label>
-                <input
-                    placeholder="Contacto"
-                    value={form.contacto}
-                    onChange={(e) => setForm({ ...form, contacto: e.target.value })}
-                    required
-                />
-                <label className="form-label">Fecha de Nacimiento</label>
-                <input
-                    type="date"
-                    value={form.fechaNacimiento}
-                    onChange={(e) => setForm({ ...form, fechaNacimiento: e.target.value })}
-                    required
-                />                <label className="form-label">Fe Bautismo</label>
-                <input
-                    type="checkbox"
-                    checked={form.feBautismo}
-                    onChange={(e) => setForm({ ...form, feBautismo: e.target.checked })}
-                />
-                
-                {/* Sección de Sacramentos */}
-                <div className="sacramentos-section">
-                    <h3>Sacramentos</h3>
-                    {form.sacramentos.map((sacramento, index) => (
-                        <div key={index} className="sacramento-item">
-                            <p><strong>Tipo:</strong> {sacramento.tipo_sacramento}</p>
-                            <p><strong>Fecha:</strong> {sacramento.fecha}</p>
-                            <p><strong>Lugar:</strong> {sacramento.lugar}</p>
-                            <button type="button" onClick={() => removeSacramento(index)}>Eliminar</button>
-                        </div>
-                    ))}
-                    
-                    <div className="add-sacramento">
-                        <h4>Agregar Sacramento</h4>
-                        <input
-                            type="text"
-                            placeholder="Tipo de Sacramento"
-                            value={newSacramento.tipo_sacramento}
-                            onChange={(e) => setNewSacramento({...newSacramento, tipo_sacramento: e.target.value})}
-                        />
-                        <input
-                            type="date"
-                            placeholder="Fecha"
-                            value={newSacramento.fecha}
-                            onChange={(e) => setNewSacramento({...newSacramento, fecha: e.target.value})}
-                        />
-                        <input
-                            type="text"
-                            placeholder="Lugar"
-                            value={newSacramento.lugar}
-                            onChange={(e) => setNewSacramento({...newSacramento, lugar: e.target.value})}
-                        />
-                        <button type="button" onClick={addSacramento}>Agregar Sacramento</button>
-                    </div>
-                </div>
-
-                {/* Sección de Inscripciones */}
-                <div className="inscripciones-section">
-                    <h3>Inscripciones</h3>
-                    {form.inscripciones.map((inscripcion, index) => (
-                        <div key={index} className="inscripcion-item">
-                            <p><strong>Estado:</strong> {inscripcion.estado}</p>
-                            <p><strong>Fecha Inscripción:</strong> {inscripcion.fecha_inscripcion}</p>
-                            <p><strong>Parroquia ID:</strong> {inscripcion.parroquia_id}</p>
-                            <p><strong>Nivel ID:</strong> {inscripcion.nivel_id}</p>
-                            <p><strong>Certificado Emitido:</strong> {inscripcion.certificado_emitido ? 'Sí' : 'No'}</p>
-                            <button type="button" onClick={() => removeInscripcion(index)}>Eliminar</button>
-                        </div>
-                    ))}
-                    
-                    <div className="add-inscripcion">
-                        <h4>Agregar Inscripción</h4>
-                        <input
-                            type="text"
-                            placeholder="ID de Parroquia"
-                            value={newInscripcion.parroquia_id}
-                            onChange={(e) => setNewInscripcion({...newInscripcion, parroquia_id: e.target.value})}
-                        />
-                        <input
-                            type="text"
-                            placeholder="ID de Nivel"
-                            value={newInscripcion.nivel_id}
-                            onChange={(e) => setNewInscripcion({...newInscripcion, nivel_id: e.target.value})}
-                        />
-                        <input
-                            type="date"
-                            placeholder="Fecha de Inscripción"
-                            value={newInscripcion.fecha_inscripcion}
-                            onChange={(e) => setNewInscripcion({...newInscripcion, fecha_inscripcion: e.target.value})}
-                        />
-                        <select
-                            value={newInscripcion.estado}
-                            onChange={(e) => setNewInscripcion({...newInscripcion, estado: e.target.value})}
-                        >
-                            <option value="Activo">Activo</option>
-                            <option value="Inactivo">Inactivo</option>
-                            <option value="Completado">Completado</option>                        </select>
-                        <div className="checkbox-container">
-                            <label className="checkbox-label">
-                                <input
-                                    type="checkbox"
-                                    checked={newInscripcion.certificado_emitido}
-                                    onChange={(e) => setNewInscripcion({...newInscripcion, certificado_emitido: e.target.checked})}
-                                />
-                                Certificado Emitido
-                            </label>
-                            <button type="button" onClick={addInscripcion}>Agregar Inscripción</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <button type="submit">{editId ? 'Actualizar' : 'Crear'}</button>
-            </form>
-
-            <div className="documents-container">
-                {catequizandos.map((doc) => (
-                    <div key={doc._id} className="document-card">
-                        <h3>Documento ID: {doc._id}</h3>
-                        <p><strong>Nombres:</strong> {doc.nombres}</p>
-                        <p><strong>Apellidos:</strong> {doc.apellidos}</p>
-                        <p><strong>Contacto:</strong> {doc.contacto}</p>
-                        <p><strong>Fecha de Nacimiento:</strong> {new Date(doc.fecha_nacimiento).toLocaleDateString()}</p>
-                        <p><strong>Fe Bautismo:</strong> {doc.fe_bautismo ? 'Sí' : 'No'}</p>
-                        <p><strong>Sacramentos:</strong></p>
-                        <ul>
-                            {doc.sacramentos.map((sacramento, index) => (
-                                <li key={index}>
-                                    <p><strong>Tipo:</strong> {sacramento.tipo_sacramento}</p>
-                                    <p><strong>Lugar:</strong> {sacramento.lugar}</p>
-                                    <p><strong>Fecha:</strong> {new Date(sacramento.fecha).toLocaleDateString()}</p>
-                                </li>
-                            ))}
-                        </ul>
-                        <p><strong>Inscripciones:</strong></p>
-                        <ul>
-                            {doc.inscripciones.map((inscripcion, index) => (
-                                <li key={index}>
-                                    <p><strong>Estado:</strong> {inscripcion.estado}</p>
-                                    <p><strong>Fecha Inscripción:</strong> {new Date(inscripcion.fecha_inscripcion).toLocaleDateString()}</p>
-                                    <p><strong>Certificado Emitido:</strong> {inscripcion.certificado_emitido ? 'Sí' : 'No'}</p>
-                                </li>
-                            ))}
-                        </ul>
-                        <button onClick={() => handleEdit(doc)}>Editar</button>
-                        <button onClick={() => handleDelete(doc._id)}>Eliminar</button>
-                    </div>
-                ))}
+        <div className="crud-section">
+            <div className="crud-header">
+                <h2>📚 Gestión de Catequizandos</h2>
+                <button 
+                    className="add-btn"
+                    onClick={() => setShowForm(!showForm)}
+                >
+                    {showForm ? '❌ Cancelar' : '➕ Nuevo Catequizando'}
+                </button>
             </div>
-        </>
+
+            {loading && <div className="loading">Cargando...</div>}
+
+            {showForm && (
+                <div className="form-container">
+                    <h3>{editId ? '✏️ Editar Catequizando' : '➕ Nuevo Catequizando'}</h3>
+                    <form onSubmit={handleSubmit} className="modern-form">
+                        <div className="form-grid">
+                            <div className="form-group">
+                                <label className="form-label">Nombres</label>
+                                <input
+                                    type="text"
+                                    placeholder="Nombres completos"
+                                    value={form.nombres}
+                                    onChange={(e) => setForm({ ...form, nombres: e.target.value })}
+                                    required
+                                />
+                            </div>
+                            
+                            <div className="form-group">
+                                <label className="form-label">Apellidos</label>
+                                <input
+                                    type="text"
+                                    placeholder="Apellidos completos"
+                                    value={form.apellidos}
+                                    onChange={(e) => setForm({ ...form, apellidos: e.target.value })}
+                                    required
+                                />
+                            </div>
+                            
+                            <div className="form-group">
+                                <label className="form-label">Contacto</label>
+                                <input
+                                    type="text"
+                                    placeholder="Teléfono o email"
+                                    value={form.contacto}
+                                    onChange={(e) => setForm({ ...form, contacto: e.target.value })}
+                                    required
+                                />
+                            </div>
+                            
+                            <div className="form-group">
+                                <label className="form-label">Fecha de Nacimiento</label>
+                                <input
+                                    type="date"
+                                    value={form.fechaNacimiento}
+                                    onChange={(e) => setForm({ ...form, fechaNacimiento: e.target.value })}
+                                    required
+                                />
+                            </div>
+                            
+                            <div className="form-group checkbox-group">
+                                <label className="checkbox-label">
+                                    <input
+                                        type="checkbox"
+                                        checked={form.feBautismo}
+                                        onChange={(e) => setForm({ ...form, feBautismo: e.target.checked })}
+                                    />
+                                    <span className="checkmark"></span>
+                                    Presenta Fe de Bautismo
+                                </label>
+                            </div>
+                        </div>
+
+                        <div className="form-actions">
+                            <button type="submit" className="submit-btn" disabled={loading}>
+                                {loading ? 'Guardando...' : (editId ? 'Actualizar' : 'Crear')}
+                            </button>
+                            <button type="button" onClick={resetForm} className="cancel-btn">
+                                Cancelar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            )}
+
+            <div className="data-section">
+                <h3>📋 Lista de Catequizandos ({catequizandos.length})</h3>
+                <div className="documents-container">
+                    {catequizandos.map((doc) => (
+                        <div key={doc._id} className="document-card">
+                            <div className="card-header">
+                                <h4>👤 {doc.nombres} {doc.apellidos}</h4>
+                                <div className="card-actions">
+                                    <button onClick={() => handleEdit(doc)} className="edit-btn" title="Editar">
+                                        ✏️
+                                    </button>
+                                    <button onClick={() => handleDelete(doc._id)} className="delete-btn" title="Eliminar">
+                                        🗑️
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div className="card-content">
+                                <div className="info-row">
+                                    <span className="label">📞 Contacto:</span>
+                                    <span>{doc.contacto}</span>
+                                </div>
+                                <div className="info-row">
+                                    <span className="label">🎂 Nacimiento:</span>
+                                    <span>{doc.fecha_nacimiento ? new Date(doc.fecha_nacimiento).toLocaleDateString() : 'No especificado'}</span>
+                                </div>
+                                <div className="info-row">
+                                    <span className="label">✝️ Fe Bautismo:</span>
+                                    <span className={`status ${doc.fe_bautismo ? 'active' : 'inactive'}`}>
+                                        {doc.fe_bautismo ? '✅ Sí' : '❌ No'}
+                                    </span>
+                                </div>
+                                
+                                {doc.sacramentos && doc.sacramentos.length > 0 && (
+                                    <div className="subsection">
+                                        <h5>🙏 Sacramentos:</h5>
+                                        <ul className="list">
+                                            {doc.sacramentos.map((sacramento, index) => (
+                                                <li key={index} className="list-item">
+                                                    <strong>{sacramento.tipo_sacramento}</strong>
+                                                    <span>{sacramento.lugar} - {new Date(sacramento.fecha).toLocaleDateString()}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+                                
+                                {doc.inscripciones && doc.inscripciones.length > 0 && (
+                                    <div className="subsection">
+                                        <h5>📝 Inscripciones:</h5>
+                                        <ul className="list">
+                                            {doc.inscripciones.map((inscripcion, index) => (
+                                                <li key={index} className="list-item">
+                                                    <span className={`status ${inscripcion.estado.toLowerCase()}`}>
+                                                        {inscripcion.estado}
+                                                    </span>
+                                                    <span>Inscrito: {new Date(inscripcion.fecha_inscripcion).toLocaleDateString()}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                    
+                    {catequizandos.length === 0 && !loading && (
+                        <div className="empty-state">
+                            <p>📝 No hay catequizandos registrados</p>
+                            <button onClick={() => setShowForm(true)} className="add-btn">
+                                Agregar el primero
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
     );
 }
 

@@ -1,55 +1,123 @@
 .reglas-container {
-    max-width: 800px;
-    margin: 40px auto;
-    padding: 20px;
-    background-color: #F9F9F9;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    transition: transform 0.3s ease-in-out;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px;
+    min-height: calc(100vh - 70px);
 }
 
-.reglas-container:hover {
-    transform: scale(1.02);
+.reglas-header {
+    text-align: center;
+    margin-bottom: 50px;
 }
 
 .reglas-title {
-    font-size: 2.5rem;
-    color: #1D1D1F;
+    font-size: 3rem;
+    color: #333;
+    margin-bottom: 15px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.reglas-subtitle {
+    font-size: 1.1rem;
+    color: #666;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+.reglas-content {
+    display: grid;
+    gap: 30px;
+}
+
+.reglas-section {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.reglas-section:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.section-title {
+    font-size: 1.5rem;
+    color: #333;
     margin-bottom: 20px;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 15px;
+}
+
+.section-icon {
+    font-size: 1.8rem;
+    color: #667eea;
 }
 
 .reglas-list {
     list-style: none;
     padding: 0;
     margin: 0;
-    text-align: left;
 }
 
 .reglas-item {
-    font-size: 1.2rem;
-    color: #333333;
+    font-size: 1rem;
+    color: #555;
     margin-bottom: 15px;
     display: flex;
-    align-items: center;
-    gap: 10px;
-    transition: color 0.3s ease-in-out;
+    align-items: flex-start;
+    gap: 12px;
+    line-height: 1.6;
+    transition: color 0.3s ease;
 }
 
 .reglas-item:hover {
-    color: #0056B3;
+    color: #333;
+}
+
+.reglas-item:last-child {
+    margin-bottom: 0;
 }
 
 .reglas-icon {
-    font-size: 1.5rem;
-    color: #0056B3;
+    font-size: 1.2rem;
+    color: #4CAF50;
     flex-shrink: 0;
-    transition: transform 0.3s ease-in-out;
+    margin-top: 2px;
+    transition: transform 0.3s ease;
 }
 
 .reglas-item:hover .reglas-icon {
     transform: scale(1.2);
+}
+
+@media (max-width: 768px) {
+    .reglas-container {
+        padding: 20px;
+    }
+    
+    .reglas-title {
+        font-size: 2.5rem;
+    }
+    
+    .reglas-section {
+        padding: 20px;
+    }
+    
+    .section-title {
+        font-size: 1.3rem;
+        flex-direction: column;
+        text-align: center;
+        gap: 8px;
+    }
 }

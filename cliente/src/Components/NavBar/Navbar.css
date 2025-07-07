@@ -1,142 +1,145 @@
-/* Estilos base del Navbar */
-nav {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 15px 30px;
-  background-color: #FFFFFF;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08); /* línea sutil en modo claro */
-}
-
-/* Navbar en modo oscuro */
-html.dark nav {
-  background: linear-gradient(to right, #1C1C1E, #252525, #1C1C1E);
-  box-shadow: 0 1px 3px rgba(255, 255, 255, 0.1);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08); /* línea sutil en modo oscuro */
-}
-
-/* Logo */
-.logo {
-  height: 40px;
-}
-
-/* Lista de enlaces */
-nav ul {
-  display: flex;
-  gap: 20px;
-  list-style: none;
-}
-
-/* Estilos para los enlaces */
-nav ul li a {
-  text-decoration: none;
-  color: #1D1D1F;
-  font-weight: 500;
-  position: relative;
-  padding: 5px 0;
-  transition: color 0.3s ease-in-out;
-}
-
-/* Cambiar color de los enlaces en modo oscuro */
-html.dark nav ul li a {
-  color: #FFFFFF;
-}
-
-/* Línea animada debajo del enlace */
-nav ul li a::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: -3px;
-  width: 0%;
-  height: 2px;
-  background-color: #0056B3;
-  transition: width 0.3s ease-in-out, left 0.3s ease-in-out;
-}
-
-/* Animación al pasar el cursor */
-nav ul li a:hover::after {
-  width: 100%;
-  left: 0;
-}
-
-/* Iconos del menú hamburguesa y cerrar */
-.menu-icon, .close-icon {
-  font-size: 24px;
-  cursor: pointer;
-  display: none;
-  z-index: 10;
-  color: #1D1D1F; /* Color por defecto */
-  transition: color 0.3s ease-in-out;
-}
-
-/* Iconos en modo oscuro */
-html.dark .menu-icon,
-html.dark .close-icon {
-  color: #FFFFFF;
-}
-
-/* Estilos para dispositivos pequeños */
-@media (max-width: 768px) {
-  .menu-icon,
-  .close-icon {
-    display: block;
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-  }
-
-  .menu-icon.hidden {
-    display: none;
-  }
-
-  /* Menú lateral oculto por defecto */
-  nav ul {
-    position: fixed;
+.navbar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    position: sticky;
     top: 0;
-    right: -100%;
-    width: 250px;
-    height: 100vh;
-    background-color: #F2F2F7;
-    flex-direction: column;
+    z-index: 1000;
+}
+
+.navbar-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
-    transition: right 0.3s ease-in-out;
-  }
+    height: 70px;
+}
 
-  /* Estilos para el menú en modo oscuro */
-  html.dark nav ul {
-    background-color: #1C1C1E; /* Fondo oscuro */
-  }
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
+    font-size: 20px;
+    font-weight: 600;
+}
 
-  /* Cambiar el color de los enlaces dentro del menú en modo oscuro */
-  html.dark nav ul li a {
-    color: #FFFFFF;
-  }
+.brand-icon {
+    font-size: 28px;
+}
 
-  /* Mostrar menú cuando esté abierto */
-  nav ul.open {
-    right: 0;
-  }
+.brand-text {
+    display: none;
+}
 
-  /* Espaciado en los enlaces */
-  nav ul li {
-    margin: 20px 0;
-  }
+.navbar-links {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 30px;
+    align-items: center;
+}
 
-  /* Ajustar el botón ThemeToggle */
-  .theme-toggle-button {
-    position: absolute;
-    right: 4rem;
-    z-index: 9;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-  }
+.navbar-links li a {
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 15px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
 
-  /* Ocultar el botón ThemeToggle cuando el menú está abierto */
-  .theme-toggle-button.hidden {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-  }
+.navbar-links li a:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.nav-icon {
+    font-size: 16px;
+}
+
+.logout-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.menu-icon, .close-icon {
+    display: none;
+    font-size: 24px;
+    color: white;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .brand-text {
+        display: block;
+    }
+    
+    .menu-icon, .close-icon {
+        display: block;
+    }
+
+    .navbar-links {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 280px;
+        height: 100vh;
+        background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        transition: right 0.3s ease;
+        box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar-links.open {
+        right: 0;
+    }
+
+    .navbar-links li a {
+        padding: 15px 20px;
+        font-size: 18px;
+        width: 200px;
+        justify-content: center;
+    }
+
+    .logout-btn {
+        padding: 15px 20px;
+        font-size: 18px;
+        width: 200px;
+        justify-content: center;
+    }
+}
+
+@media (min-width: 769px) {
+    .brand-text {
+        display: block;
+    }
 }
