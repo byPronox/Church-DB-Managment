@@ -2,11 +2,16 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './Navbar.css';
 
-function Navbar() {
+function Navbar({ onLogout }) {
     const [menuOpen, setMenuOpen] = useState(false);
 
     const toggleMenu = () => {
         setMenuOpen(!menuOpen);
+    };
+
+    const handleLogout = () => {
+        onLogout();
+        setMenuOpen(false);
     };
 
     return (
@@ -23,7 +28,7 @@ function Navbar() {
                 {/* Navbar Links */}
                 <ul className={`navbar-links ${menuOpen ? 'open' : ''}`}>
                     <li>
-                        <Link to="/" onClick={toggleMenu}>Inicio</Link>
+                        <Link to="/" onClick={toggleMenu}>Dashboard</Link>
                     </li>
                     <li>
                         <Link to="/reglas-negocio" onClick={toggleMenu}>Reglas del Negocio</Link>
@@ -33,6 +38,14 @@ function Navbar() {
                     </li>
                     <li>
                         <Link to="/crud" onClick={toggleMenu}>CRUD</Link>
+                    </li>
+                    <li>
+                        <button 
+                            className="logout-button" 
+                            onClick={handleLogout}
+                        >
+                            Cerrar Sesión
+                        </button>
                     </li>
                 </ul>
             </div>

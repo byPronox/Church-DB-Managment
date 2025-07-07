@@ -1,55 +1,166 @@
 .reglas-container {
-    max-width: 800px;
-    margin: 40px auto;
-    padding: 20px;
-    background-color: #F9F9F9;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    transition: transform 0.3s ease-in-out;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 2rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.reglas-container:hover {
-    transform: scale(1.02);
+.reglas-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    background: white;
+    padding: 3rem 2rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 .reglas-title {
-    font-size: 2.5rem;
-    color: #1D1D1F;
-    margin-bottom: 20px;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
+    font-size: 3rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
-.reglas-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    text-align: left;
-}
-
-.reglas-item {
+.reglas-subtitle {
     font-size: 1.2rem;
-    color: #333333;
-    margin-bottom: 15px;
+    color: #6c757d;
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.reglas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.regla-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    display: flex;
+    gap: 1.5rem;
+    transition: all 0.3s ease;
+    border-left: 5px solid;
+    position: relative;
+    overflow: hidden;
+}
+
+.regla-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.regla-card.blue { border-left-color: #3498db; }
+.regla-card.green { border-left-color: #2ecc71; }
+.regla-card.purple { border-left-color: #9b59b6; }
+.regla-card.orange { border-left-color: #f39c12; }
+.regla-card.pink { border-left-color: #e91e63; }
+.regla-card.teal { border-left-color: #1abc9c; }
+
+.regla-icon {
+    font-size: 3rem;
+    padding: 1rem;
+    border-radius: 15px;
     display: flex;
     align-items: center;
-    gap: 10px;
-    transition: color 0.3s ease-in-out;
-}
-
-.reglas-item:hover {
-    color: #0056B3;
-}
-
-.reglas-icon {
-    font-size: 1.5rem;
-    color: #0056B3;
+    justify-content: center;
     flex-shrink: 0;
-    transition: transform 0.3s ease-in-out;
+    width: 80px;
+    height: 80px;
 }
 
-.reglas-item:hover .reglas-icon {
-    transform: scale(1.2);
+.regla-card.blue .regla-icon { background: rgba(52, 152, 219, 0.1); }
+.regla-card.green .regla-icon { background: rgba(46, 204, 113, 0.1); }
+.regla-card.purple .regla-icon { background: rgba(155, 89, 182, 0.1); }
+.regla-card.orange .regla-icon { background: rgba(243, 156, 18, 0.1); }
+.regla-card.pink .regla-icon { background: rgba(233, 30, 99, 0.1); }
+.regla-card.teal .regla-icon { background: rgba(26, 188, 156, 0.1); }
+
+.regla-content {
+    flex: 1;
+}
+
+.regla-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.regla-description {
+    color: #6c757d;
+    line-height: 1.6;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.reglas-footer {
+    display: flex;
+    justify-content: center;
+}
+
+.footer-card {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    text-align: center;
+    border-left: 5px solid #667eea;
+}
+
+.footer-card h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.footer-card p {
+    color: #6c757d;
+    line-height: 1.6;
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .reglas-container {
+        padding: 1rem;
+    }
+    
+    .reglas-header {
+        padding: 2rem 1rem;
+    }
+    
+    .reglas-title {
+        font-size: 2rem;
+    }
+    
+    .reglas-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .regla-card {
+        padding: 1.5rem;
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .regla-icon {
+        align-self: center;
+    }
+    
+    .footer-card {
+        padding: 2rem 1rem;
+    }
 }

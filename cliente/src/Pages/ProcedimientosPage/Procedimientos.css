@@ -1,26 +1,42 @@
 .procedimientos-container {
-    padding: 20px;
-    text-align: center;
-    background-color: #F9F9F9;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    max-width: 800px;
-    margin: 40px auto;
-    transition: transform 0.3s ease-in-out;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 2rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .procedimientos-container:hover {
     transform: scale(1.02);
 }
 
-.procedimientos-title {
-    font-size: 2rem;
-    color: #1D1D1F;
-    margin-bottom: 20px;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
+.procedimientos-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    background: white;
+    padding: 3rem 2rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
+
+.procedimientos-title {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.procedimientos-subtitle {
+    font-size: 1.2rem;
+    color: #6c757d;
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
 .procedimientos-list {
     list-style: none;
     padding: 0;
@@ -59,4 +75,205 @@
 .procedimientos-link:hover::after {
     width: 100%; /* Solo la línea se anima */
     left: 0;
+}
+
+.procedimientos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.procedimiento-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border-left: 5px solid;
+    overflow: hidden;
+    position: relative;
+}
+
+.procedimiento-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.procedimiento-card.blue { border-left-color: #3498db; }
+.procedimiento-card.green { border-left-color: #2ecc71; }
+.procedimiento-card.purple { border-left-color: #9b59b6; }
+.procedimiento-card.orange { border-left-color: #f39c12; }
+.procedimiento-card.pink { border-left-color: #e91e63; }
+.procedimiento-card.teal { border-left-color: #1abc9c; }
+.procedimiento-card.indigo { border-left-color: #6c5ce7; }
+
+.procedimiento-header {
+    padding: 2rem 2rem 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.procedimiento-icon {
+    font-size: 3rem;
+    padding: 1rem;
+    border-radius: 15px;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.procedimiento-card.blue .procedimiento-icon { background: rgba(52, 152, 219, 0.1); }
+.procedimiento-card.green .procedimiento-icon { background: rgba(46, 204, 113, 0.1); }
+.procedimiento-card.purple .procedimiento-icon { background: rgba(155, 89, 182, 0.1); }
+.procedimiento-card.orange .procedimiento-icon { background: rgba(243, 156, 18, 0.1); }
+.procedimiento-card.pink .procedimiento-icon { background: rgba(233, 30, 99, 0.1); }
+.procedimiento-card.teal .procedimiento-icon { background: rgba(26, 188, 156, 0.1); }
+.procedimiento-card.indigo .procedimiento-icon { background: rgba(108, 92, 231, 0.1); }
+
+.procedimiento-status {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.procedimiento-status.available {
+    background: rgba(46, 204, 113, 0.1);
+    color: #27ae60;
+    border: 1px solid rgba(46, 204, 113, 0.3);
+}
+
+.procedimiento-status.coming-soon {
+    background: rgba(243, 156, 18, 0.1);
+    color: #f39c12;
+    border: 1px solid rgba(243, 156, 18, 0.3);
+}
+
+.procedimiento-content {
+    padding: 0 2rem 1rem 2rem;
+}
+
+.procedimiento-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.procedimiento-description {
+    color: #6c757d;
+    line-height: 1.6;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.procedimiento-footer {
+    padding: 1rem 2rem 2rem 2rem;
+}
+
+.procedimiento-button {
+    width: 100%;
+    padding: 1rem;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.procedimiento-button:not(.disabled) {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.procedimiento-button:not(.disabled):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+.procedimiento-button.disabled {
+    background: #ecf0f1;
+    color: #95a5a6;
+    cursor: not-allowed;
+}
+
+.button-arrow {
+    transition: transform 0.3s ease;
+}
+
+.procedimiento-button:not(.disabled):hover .button-arrow {
+    transform: translateX(5px);
+}
+
+.procedimientos-info {
+    display: flex;
+    justify-content: center;
+}
+
+.info-card {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    text-align: center;
+    border-left: 5px solid #667eea;
+}
+
+.info-card h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.info-card p {
+    color: #6c757d;
+    line-height: 1.6;
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .procedimientos-container {
+        padding: 1rem;
+    }
+    
+    .procedimientos-header {
+        padding: 2rem 1rem;
+    }
+    
+    .procedimientos-title {
+        font-size: 2rem;
+    }
+    
+    .procedimientos-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .procedimiento-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .info-card {
+        padding: 2rem 1rem;
+    }
 }
